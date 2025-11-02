@@ -16,11 +16,20 @@ const AddVideoForm = ({ videoId }) => {
     const [fileSizeInput, setFileSizeInput] = useState('');
     const [resolutionInput, setResolutionInput] = useState('');
 
+    // error handling state
+    const [errorMessage, setErrorMessage] = useState(null);
+    // error state to contain a message for each field that has an error
+    const [fieldErrors, setFieldErrors] = useState({});
+
+
     const handleSubmit = (e) => {
         e.preventDefault();
         // the title is required
         if (!titleInput.trim()) {
-            alert('Title is required');
+            // set error message
+            setFieldErrors({ title: 'Title is required' });
+            // show general error message for this
+            setErrorMessage('Please fix the errors in the form before submitting.');
             return;
         }
         // construct video object
@@ -91,14 +100,28 @@ const AddVideoForm = ({ videoId }) => {
 
     return (
         <div id='video-form'>
-            <h2>{title}</h2>
+            <header className="page-header">
+                <h2>{title}</h2>
+                <div className='page-description'>Please fill out the form below to {videoId ? 'edit' : 'add'} a video.</div>
+            </header>
+
+            {errorMessage && (
+                <div class='error-message form-error'>
+                    {errorMessage}
+                </div>
+            )}
+
             <form>
                 <div class='input-group'>
                     <label for='title'>Title</label>
                     <input
                         value={titleInput}
                         onChange={(e) => handleInputChange(e, setTitleInput, 200)}
+                        className={fieldErrors.title ? 'input-error' : ''}
                         type='text' id='title' name='title' placeholder='Title...' />
+                    {fieldErrors.title && (
+                        <span class='error-message'>{fieldErrors.title}</span>
+                    )}
                 </div>
 
                 <div class='input-group'>

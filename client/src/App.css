@@ -3,6 +3,13 @@
   width: 100%;
 }
 
+.page-header {
+  margin-bottom: 1.5rem;
+  h2 {
+    margin:0.5rem 0;
+  }
+}
+
 /* Input styling */
 
 .input-group {
@@ -37,6 +44,15 @@
     box-shadow: 0 0 0 3px rgba(99, 102, 241, 0.1);
 }
 
+/* Input error styling */
+.input-group .input-error {
+    border-color: #DC2626;
+}
+.input-group .input-error:focus {
+    border-color: #DC2626;
+    box-shadow: 0 0 0 3px rgba(220, 38, 38, 0.1);
+}
+
 /* Form footer styling */
 .form-footer {
     display: flex;
@@ -59,4 +75,11 @@
 }
 .submit-button:focus {
     outline: 4px auto -webkit-focus-ring-color;
+}
+
+/* Error message styling */
+.error-message {
+    color: #DC2626;
+    font-size: 14px;
+    margin: 8px 0;
 }
