@@ -64,7 +64,9 @@ const AddVideoForm = ({ videoId }) => {
             setUploaderNameInput('');
             setFileSizeInput('');
             setResolutionInput('');
+            // return to video list
             alert('Video added successfully!');
+            window.location.href = '/';
         })
         .catch((error) => {
             console.error('Error adding video:', error);
