@@ -29,8 +29,6 @@ html, body {
 
 body {
   margin: 0;
-  display: flex;
-  min-width: 320px;
 }
 
 h1 {
