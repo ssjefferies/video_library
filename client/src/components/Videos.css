@@ -1,0 +1,9 @@
+#video-main {
+    display: flex;
+}
+
+#search-body {
+    display: flex;
+    flex-direction: column;
+    padding: 20px;
+}

@@ -27,41 +27,50 @@ const SEARCH_QUERY_BASE = 'SELECT * FROM videos';
 const SEARCH_QUERY_ORDER = ' ORDER BY upload_date DESC';
 
 exports.searchVideos = async (req, res) => {
-    const {title, description, tags, uploader, category, match} = req.query;
+    const {term, category} = req.query;
 
-    const conditions = [];
+    let searchTerms = '';
+    const filters = [];
     const params = [];
-    
-    if (title) {
-        conditions.push('title LIKE ?');
-        params.push(`%${title}%`);
+
+    /**
+     * General search term. Use this to search across
+     * title, description, tags, and uploader.
+     * Match these on 'any' ('OR')
+     */
+    if (term) {
+        searchTerms = ` (title LIKE ? OR description LIKE ? OR uploader_name LIKE ? OR (JSON_SEARCH(tags, 'one', ?, NULL, '$[*]') IS NOT NULL)) `;
+        params.push(`%${term}%`);
+        params.push(`%${term}%`);
+        params.push(`%${term}%`);
+        params.push(`%${term}%`);
     }
     
-    if (description) {
-        conditions.push('description LIKE ?');
-        params.push(`%${description}%`);
-    }
-    
-    if (uploader) {
-        conditions.push('uploader_name LIKE ?');
-        params.push(`%${uploader}%`);
-    }
-    
+    /**
+     * The following fields are filters, so match on ALL ('AND')
+     * title, description, tags, uploader, category, match
+     */
     if (category) {
-        conditions.push('category LIKE ?');
+        filters.push('category LIKE ?');
         params.push(`%${category}%`);
     }
-    
-    if (tags) {
-        conditions.push('JSON_CONTAINS(tags, ?)');
-        params.push(JSON.stringify(tags));
-    }
+ 
+    // WHERE
+    // (term1 OR term2 OR term 3)
+    // AND
+    // (filter1 AND filter2 AND filter3 AND)
+    //
 
     try {
         let query = SEARCH_QUERY_BASE;
-        if (conditions.length > 0) {
-            const logicOperator = match == 'any' ? ' OR ' : ' AND ';
-            query += " WHERE " + conditions.join(logicOperator);
+
+        if (searchTerms) {
+            query += " WHERE " +  searchTerms;
+        }
+        if (filters.length > 0) {
+            query += searchTerms ? ' AND ' : ' WHERE ';
+            //const logicOperator = match == 'any' ? ' OR ' : ' AND ';
+            query += ' (' + filters.join(' AND ') + ') ';
         } 
         query += SEARCH_QUERY_ORDER;
 
