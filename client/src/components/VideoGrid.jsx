@@ -18,7 +18,15 @@ const VideoCard = ({ video, handleDelete }) => {
             <div className="video-info">
                 <h4 className="video-title">{video.title}</h4>
                 <p className="video-category">{video.category}</p>
+                <p className="video-description">{video.description}</p>
+                <p className="video-upload-date">Uploaded on: {new Date(video.upload_date).toLocaleDateString()}
+                    &nbsp;by&nbsp;
+                    <span className="uploader-name">{video.uploader_name}</span>
+                </p>
                 <p className="video-duration">Duration: {formatDuration(video.duration)}</p>
+                <p className="video-tags">Tags: {(video.tags || []).join(', ')}</p>
+                <p className="video-resolution">Resolution: {video.resolution}</p>
+                <p className="video-file-size">File Size: {video.file_size} MB</p>
                 <section className='form-footer'>
                     <button>
                         <Link to={`/form/${video.id}`}
