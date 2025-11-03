@@ -12,6 +12,9 @@ import './App.css'
 function App() {
   const [searchTerm, setSearchTerm] = useState('');
   const [categories, setCategories] = useState([]);
+  const [page, setPage] = useState(1);
+  const [limit, setLimit] = useState(2);
+  const [hasNextPage, setHasNextPage] = useState(false);
 
   return (
       <BrowserRouter>
@@ -26,6 +29,12 @@ function App() {
                   setSearchTerm={setSearchTerm}
                   categories={categories}
                   setCategories={setCategories}
+                  page={page}
+                  setPage={setPage}
+                  limit={limit}
+                  setLimit={setLimit}
+                  hasNextPage={hasNextPage}
+                  setHasNextPage={setHasNextPage}
                 />
               } 
           />

@@ -12,55 +12,70 @@ import CloseOutlinedIcon from '@mui/icons-material/CloseOutlined';
 
 import './VideoList.scss';
 
-const VideoList = ({ searchResults, handleDelete }) => {
+const VideoList = ({
+    searchResults,
+    handleDelete,
+    handleNextPage,
+    hasNextPage,
+    limit
+}) => {
     return (
         <div id="video-list">
             <TableContainer component={Paper}>
-      <Table sx={{ tableLayout: 'fixed', width: '100%' }} aria-label="simple table">
-        <TableHead>
-          <TableRow>
-            <TableCell align="left" sx={{width: "50px", maxWidth: '50px'}}></TableCell>
-            <TableCell align="left" sx={{width: "200px", maxWidth: '250px'}}>Title</TableCell>
-            <TableCell align="left">Url</TableCell>
-            <TableCell align="left">Thumbnail Url</TableCell>
-            <TableCell align="left">Duration</TableCell>
-            <TableCell align="left">Category</TableCell>
-            <TableCell align="left">Upload Date</TableCell>
-          </TableRow>
-        </TableHead>
-        <TableBody>
-          {(searchResults?.videos || []).map((row) => (
-            <TableRow
-              key={row.id}
-              sx={{ '&:last-child td, &:last-child th': { border: 0 } }}
-            >
-                <TableCell align="left">
-                    <div  style={{ display: 'flex' }}>
-                        <Link to={`/form/${row.id}`}
-                            aria-label="Edit Video"
-                            title="Edit Video"
+                <Table sx={{ tableLayout: 'fixed', width: '100%' }} aria-label="simple table">
+                    <TableHead>
+                    <TableRow>
+                        <TableCell align="left" sx={{width: "50px", maxWidth: '50px'}}></TableCell>
+                        <TableCell align="left" sx={{width: "200px", maxWidth: '250px'}}>Title</TableCell>
+                        <TableCell align="left">Url</TableCell>
+                        <TableCell align="left">Thumbnail Url</TableCell>
+                        <TableCell align="left">Duration</TableCell>
+                        <TableCell align="left">Category</TableCell>
+                        <TableCell align="left">Upload Date</TableCell>
+                    </TableRow>
+                    </TableHead>
+                    <TableBody>
+                    {(searchResults?.videos || []).map((row) => (
+                        <TableRow
+                        key={row.id}
+                        sx={{ '&:last-child td, &:last-child th': { border: 0 } }}
                         >
-                            <EditOutlinedIcon className='edit-icon'/>
-                        </Link>
-                        <CloseOutlinedIcon
-                            className='delete-icon'
-                            aria-label="Delete Video"
-                            title="Delete Video"
-                            onClick={() => handleDelete(row.id)}
-                        />
-                    </div>
-                </TableCell>
-                <TableCell align="left">{row.title}</TableCell>
-                <TableCell align="left">{row.url}</TableCell>
-                <TableCell align="left">{row.thumbnail_url}</TableCell>
-                <TableCell align="left">{row.duration}</TableCell>
-                <TableCell align="left">{row.category}</TableCell>
-                <TableCell align="left">{row.upload_date}</TableCell>
-            </TableRow>
-          ))}
-        </TableBody>
-      </Table>
-    </TableContainer>
+                            <TableCell align="left">
+                                <div  style={{ display: 'flex' }}>
+                                    <Link to={`/form/${row.id}`}
+                                        aria-label="Edit Video"
+                                        title="Edit Video"
+                                    >
+                                        <EditOutlinedIcon className='edit-icon'/>
+                                    </Link>
+                                    <CloseOutlinedIcon
+                                        className='delete-icon'
+                                        aria-label="Delete Video"
+                                        title="Delete Video"
+                                        onClick={() => handleDelete(row.id)}
+                                    />
+                                </div>
+                            </TableCell>
+                            <TableCell align="left">{row.title}</TableCell>
+                            <TableCell align="left">{row.url}</TableCell>
+                            <TableCell align="left">{row.thumbnail_url}</TableCell>
+                            <TableCell align="left">{row.duration}</TableCell>
+                            <TableCell align="left">{row.category}</TableCell>
+                            <TableCell align="left">{row.upload_date}</TableCell>
+                        </TableRow>
+                    ))}
+                    </TableBody>
+                </Table>
+            </TableContainer>
+            <div className="pagination-controls">
+                <button
+                    disabled={!hasNextPage}
+                    className="next-button"
+                    onClick={handleNextPage}
+                >
+                    Next {limit} Videos
+                </button>
+            </div>
         </div>
     )
 }

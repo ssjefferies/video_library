@@ -48,6 +48,7 @@ exports.getVideoById = async(req, res) => {
     }
 };
 
+const SELECT_COUNT = 'SELECT COUNT(*) as total FROM videos';
 const SEARCH_QUERY_BASE = 'SELECT * FROM videos';
 const SEARCH_QUERY_ORDER = ' ORDER BY upload_date DESC';
 
@@ -58,6 +59,18 @@ const SEARCH_QUERY_ORDER = ' ORDER BY upload_date DESC';
  */
 exports.searchVideos = async (req, res) => {
     const {term, category} = req.query;
+    const page = req.query.page ? parseInt(req.query.page) : 1;
+    const limit = req.query.limit ? parseInt(req.query.limit) : 20;
+
+    // Validate required parameters
+    /*
+    if (!req.query.page || !req.query.limit) {
+        return res.status(400).json({ 
+            error: 'Missing required pagination parameters',
+            message: 'Both "page" and "limit" query parameters are required',
+            example: '/api/videos?page=1&limit=20'
+        });
+    }*/
 
     let searchTerms = '';
     const filters = [];
@@ -94,7 +107,6 @@ exports.searchVideos = async (req, res) => {
             filters.push('category LIKE ?');
             params.push(`%${category}%`);
         }
-        
     }
  
     // WHERE
@@ -104,7 +116,15 @@ exports.searchVideos = async (req, res) => {
     //
 
     try {
-        let query = SEARCH_QUERY_BASE;
+        // Get total count
+        /*
+        const [countResult] = await pool.execute(
+            'SELECT COUNT(*) as total FROM videos'
+        );
+        const total = countResult[0].total;
+        */
+
+        let query = '';
 
         if (searchTerms) {
             query += " WHERE " +  searchTerms;
@@ -115,12 +135,33 @@ exports.searchVideos = async (req, res) => {
         } 
         query += SEARCH_QUERY_ORDER;
 
-        const [rows] = await pool.execute(query, params);
+        // Get total count with same filters
+        let countQuery = SELECT_COUNT + query;
+        const [countResult] = await pool.execute(countQuery, params);
+        const total = countResult[0].total;
+
+        // paging
+        const pageNum = Math.max(1, Math.min(parseInt(page, 10) || 1, 10000));
+        const limitNum = Math.max(1, Math.min(parseInt(limit, 10) || 20, 100));
+        const offset = (pageNum - 1) * limitNum;
+        query += ` LIMIT ${limitNum} OFFSET ${offset}`;
+        
+        // Get paged results
+        let searchQuery = SEARCH_QUERY_BASE + query;
+
+        const [rows] = await pool.execute(searchQuery, params);
         res.status(200).json({
             succes: true,
             data: {
-                count: rows.length,
-                videos: rows
+                videos: rows,
+                pagination: {
+                    page,
+                    limit,
+                    total,
+                    totalPages: Math.ceil(total / limit),
+                    hasNextPage: offset + limit < total,
+                    hasPrevPage: page > 1
+                }
             }
         });
     } catch (error) {

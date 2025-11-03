@@ -9,13 +9,17 @@ const VIDEO_LIBRARY_API_URL = import.meta.env.VITE_VIDEO_LIBRARY_API_URL;
 
 const Videos = ({ 
     searchTerm, setSearchTerm,
-    categories, setCategories
+    categories, setCategories,
+    page, setPage,
+    hasNextPage, setHasNextPage,
+    limit
 }) => {
     const [searchResults, setSearchResults] = useState([]);
     const [message, setMessage] = useState(null);
     const [errorMessage, setErroMessage] = useState(null);
 
     useEffect(() => {
+        setPage(1); // reset to page 1 on new search
         // if no search term, set search results to empty
         if (!searchTerm.trim() && (!categories || categories.length === 0)) {
             setSearchResults([]);
@@ -24,7 +28,7 @@ const Videos = ({
 
         // Debounce: wait 500ms after user stops typing
         const delaySearch = setTimeout(() => {
-            fetchResults();
+            fetchResults(true);
         }, 300)
 
         return () => clearTimeout(delaySearch);
@@ -56,6 +60,18 @@ const Videos = ({
         }
     }, [location]);
 
+    // fetch results when the page changes
+    useEffect(() => {
+        if (!searchTerm.trim() && (!categories || categories.length === 0)) {
+            setSearchResults([]);
+            return;
+        }
+        // Only fetch if page > 1 (page 1 is handled by the above useEffect)
+        if (page > 1) {
+            fetchResults(); // append results
+        }
+    }, [page]);
+
     const handleDelete = async (id) => {
         try {
             await fetch(`${VIDEO_LIBRARY_API_URL}/api/videos/${id}`, {
@@ -68,7 +84,12 @@ const Videos = ({
         }
     }
 
-    const fetchResults = async () => {
+    // fetch next set of results and add them to the existing results
+    const handleNextPage = () => {
+        setPage(prevPage => prevPage + 1);
+    }
+
+    const fetchResults = async (clear) => {
         let params = searchTerm ? `term=${encodeURIComponent(searchTerm)}` : '';
         const categoryParams = categories.length > 0 ? `category=${categories.map(encodeURIComponent).join('&category=')}` : '';
         if (params && categoryParams) {
@@ -76,13 +97,28 @@ const Videos = ({
         } else if (categoryParams) {
             params += categoryParams;
         }
+
+        // add pagination params
+        params += `${params ? '&' : ''}page=${clear ? 1 : page}&limit=${limit}`;
     
         try {
             const response = await fetch(
                 `${VIDEO_LIBRARY_API_URL}/api/videos/search?${params}`
             )
             const results = await response.json();
-            setSearchResults(results?.data || []);
+            if (results?.data?.pagination) {
+                setHasNextPage(results.data.pagination.hasNextPage);
+            }
+
+            if (clear || page === 1) {
+                setSearchResults(results?.data || []);
+            } else {
+                setSearchResults(prevResults => ({
+                    ...results.data,
+                    videos: [...(prevResults.videos || []), ...(results.data.videos || [])]
+                }));
+            }
+            
         } catch (error) {
             setErroMessage(error.message);
             setSearchResults([]);
@@ -106,6 +142,9 @@ const Videos = ({
                 <VideoList
                     searchResults={searchResults}
                     handleDelete={handleDelete}
+                    limit={limit}
+                    handleNextPage={handleNextPage}
+                    hasNextPage={hasNextPage}
                 />
             </div>
         </div>

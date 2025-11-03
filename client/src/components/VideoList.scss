@@ -17,5 +17,30 @@
             border-bottom: 0;
         }
     }
+
+    .pagination-controls {
+        margin-top: 1rem;
+        display: flex;
+        justify-content: left;
+
+        button {
+            background-color: #646cff;
+            color: white;
+            border: none;
+            padding: 0.5rem 1rem;
+            margin: 0 0.5rem;
+            border-radius: 4px;
+            cursor: pointer;
+
+            &:hover {
+                background-color: #535bf2;
+            }
+        }
+        
+        button:disabled {
+            background-color: #cccccc;
+            cursor: not-allowed;
+        }
+    }
 }
 
