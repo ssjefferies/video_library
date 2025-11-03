@@ -1,11 +1,12 @@
-import React, { useEffect, useState} from 'react';
-import { useParams } from 'react-router-dom';
+import { useEffect, useState} from 'react';
+import { useNavigate, useParams } from 'react-router-dom';
 import './AddVideoForm.scss';
 
 // make the submit button right-aligned and styled nicely
 const AddVideoForm = () => {
     const { id: videoId } = useParams();
     const title = videoId ? 'Edit Video' : 'New Video';
+    const navigate = useNavigate();
 
     const [titleInput, setTitleInput] = useState('');
     const [descriptionInput, setDescriptionInput] = useState('');
@@ -53,7 +54,6 @@ const AddVideoForm = () => {
         }
     }, [videoId]);
 
-
     const handleSubmit = (e) => {
         e.preventDefault();
         // the title is required
@@ -100,6 +100,8 @@ const AddVideoForm = () => {
         })
         .then((data) => {
             console.log('Video added successfully:', data);
+            const newTitle = titleInput ? `The video '${titleInput}'` : 'The video';
+
             // clear form
             setTitleInput('');
             setDescriptionInput('');
@@ -112,8 +114,11 @@ const AddVideoForm = () => {
             setFileSizeInput('');
             setResolutionInput('');
             // return to video list
-            alert('Video added successfully!');
-            window.location.href = '/';
+
+            navigate('/', { state: {
+                message: `${newTitle} has been ${videoId ? 'updated' : 'added'} successfully.`,
+                newVideoId: data.id 
+            } });
         })
         .catch((error) => {
             console.error('Error adding video:', error);

@@ -10,7 +10,7 @@ import Paper from '@mui/material/Paper';
 import EditOutlinedIcon from '@mui/icons-material/EditOutlined';
 import CloseOutlinedIcon from '@mui/icons-material/CloseOutlined';
 
-import './VideoList.css';
+import './VideoList.scss';
 
 const VideoList = ({ searchResults, handleDelete }) => {
     return (
@@ -34,19 +34,21 @@ const VideoList = ({ searchResults, handleDelete }) => {
               key={row.id}
               sx={{ '&:last-child td, &:last-child th': { border: 0 } }}
             >
-                <TableCell align="left" style={{ display: 'flex' }}>
-                    <Link to={`/form/${row.id}`}
-                        aria-label="Edit Video"
-                        title="Edit Video"
-                    >
-                        <EditOutlinedIcon className='edit-icon'/>
-                    </Link>
-                    <CloseOutlinedIcon
-                        className='delete-icon'
-                        aria-label="Delete Video"
-                        title="Delete Video"
-                        onClick={() => handleDelete(row.id)}
-                    />
+                <TableCell align="left">
+                    <div  style={{ display: 'flex' }}>
+                        <Link to={`/form/${row.id}`}
+                            aria-label="Edit Video"
+                            title="Edit Video"
+                        >
+                            <EditOutlinedIcon className='edit-icon'/>
+                        </Link>
+                        <CloseOutlinedIcon
+                            className='delete-icon'
+                            aria-label="Delete Video"
+                            title="Delete Video"
+                            onClick={() => handleDelete(row.id)}
+                        />
+                    </div>
                 </TableCell>
                 <TableCell align="left">{row.title}</TableCell>
                 <TableCell align="left">{row.url}</TableCell>

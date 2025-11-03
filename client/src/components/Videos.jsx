@@ -1,4 +1,5 @@
 import { useState, useEffect } from 'react';
+import { useLocation } from 'react-router-dom';
 import VideoFilters from "./VideoFilters";
 import VideoSearch from "./VideoSearch";
 import VideoList from "./VideoList";
@@ -6,9 +7,9 @@ import './Videos.css';
 
 const VIDEO_LIBRARY_API_URL = import.meta.env.VITE_VIDEO_LIBRARY_API_URL;
 
-const Videos = () => {
-    const [searchTerm, setSearchTerm] = useState('');
+const Videos = ({ searchTerm, setSearchTerm }) => {
     const [searchResults, setSearchResults] = useState([]);
+    const [message, setMessage] = useState(null);
     const [errorMessage, setErroMessage] = useState(null);
 
     useEffect(() => {
@@ -25,6 +26,27 @@ const Videos = () => {
 
         return () => clearTimeout(delaySearch);
     }, [searchTerm]);
+
+    // set the video saved message
+    useEffect(() => {
+        if (message) {
+            const timer = setTimeout(() => {
+                setMessage(null);
+            }
+            , 5000);
+            return () => clearTimeout(timer);
+        }
+    }, [message]);
+
+    const location = useLocation();
+    useEffect(() => {
+        // Check if redirected from form with success message
+        if (location.state && location.state.message) {
+            setMessage(location.state.message);
+            // Clear the state to prevent message on further navigations
+            window.history.replaceState({}, document.title)
+        }
+    }, [location]);
 
     const handleDelete = async (id) => {
         try {
@@ -55,6 +77,9 @@ const Videos = () => {
         <div id="video-main">
             <VideoFilters />
             <div id="search-body">
+                {message && <div className="success-message">{message}</div>}
+                {errorMessage && <div className="error-message">{errorMessage}</div>}
+
                 <VideoSearch
                     searchTerm={searchTerm}
                     setSearchTerm={setSearchTerm}

@@ -83,3 +83,10 @@
     font-size: 14px;
     margin: 8px 0;
 }
+
+/* Success message styling */
+.success-message {
+    color: #16A34A;
+    font-size: 14px;
+    margin: 8px 0;
+}

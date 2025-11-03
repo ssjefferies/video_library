@@ -1,3 +1,4 @@
+import { useState } from 'react'
 import {
   BrowserRouter,
   Routes,
@@ -9,12 +10,13 @@ import AddVideoForm from './components/AddVideoForm';
 import './App.css'
 
 function App() {
+  const [searchTerm, setSearchTerm] = useState('');
   return (
       <BrowserRouter>
         <div id="app">
           <Header />
           <Routes>
-            <Route path="/" element={<Videos />} />
+            <Route path="/" element={<Videos searchTerm={searchTerm} setSearchTerm={setSearchTerm} />} />
             <Route path="/form/:id?" element={<AddVideoForm />} />
           </Routes>
         </div>

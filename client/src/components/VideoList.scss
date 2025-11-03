@@ -1,0 +1,21 @@
+#video-list {
+    margin-top: 2rem;
+
+    .edit-icon {
+        color: #646cff;
+        cursor: pointer;
+    }
+
+    .delete-icon {
+        color: #ff4d4d;
+        cursor: pointer;
+    }
+
+    tr {
+        border-bottom: solid 1px #e0e0e0;
+        td {
+            border-bottom: 0;
+        }
+    }
+}
+
