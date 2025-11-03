@@ -81,8 +81,20 @@ exports.searchVideos = async (req, res) => {
      * title, description, tags, uploader, category, match
      */
     if (category) {
-        filters.push('category LIKE ?');
-        params.push(`%${category}%`);
+        if (Array.isArray(category)) {
+            // multiple categories
+            const categoryFilters = [];
+            category.forEach(cat => {
+                categoryFilters.push('category LIKE ?');
+                params.push(`%${cat}%`);
+            });
+            filters.push('(' + categoryFilters.join(' OR ') + ')');
+        } else {
+            // single category
+            filters.push('category LIKE ?');
+            params.push(`%${category}%`);
+        }
+        
     }
  
     // WHERE
@@ -99,7 +111,6 @@ exports.searchVideos = async (req, res) => {
         }
         if (filters.length > 0) {
             query += searchTerms ? ' AND ' : ' WHERE ';
-            //const logicOperator = match == 'any' ? ' OR ' : ' AND ';
             query += ' (' + filters.join(' AND ') + ') ';
         } 
         query += SEARCH_QUERY_ORDER;

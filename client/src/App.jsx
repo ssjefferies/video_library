@@ -11,12 +11,24 @@ import './App.css'
 
 function App() {
   const [searchTerm, setSearchTerm] = useState('');
+  const [categories, setCategories] = useState([]);
+
   return (
       <BrowserRouter>
         <div id="app">
           <Header />
           <Routes>
-            <Route path="/" element={<Videos searchTerm={searchTerm} setSearchTerm={setSearchTerm} />} />
+            <Route
+              path="/"
+              element={
+                <Videos
+                  searchTerm={searchTerm}
+                  setSearchTerm={setSearchTerm}
+                  categories={categories}
+                  setCategories={setCategories}
+                />
+              } 
+          />
             <Route path="/form/:id?" element={<AddVideoForm />} />
           </Routes>
         </div>
