@@ -240,6 +240,8 @@ const AddVideoForm = () => {
                 </div>
 
                 <section className='form-footer'>
+                    <button type='button' className='cancel-button' onClick={() => navigate(-1)}>Cancel</button>
+                    &nbsp;
                     <button
                         onClick={handleSubmit}
                         type='submit' className='submit-button'>{videoId ? 'Update Video' : 'Add Video'}</button>

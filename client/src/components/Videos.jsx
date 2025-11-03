@@ -3,6 +3,7 @@ import { useLocation } from 'react-router-dom';
 import VideoFilters from "./VideoFilters";
 import VideoSearch from "./VideoSearch";
 import VideoList from "./VideoList";
+import VideoGrid from "./VideoGrid";
 import './Videos.css';
 
 const VIDEO_LIBRARY_API_URL = import.meta.env.VITE_VIDEO_LIBRARY_API_URL;
@@ -12,7 +13,8 @@ const Videos = ({
     categories, setCategories,
     page, setPage,
     hasNextPage, setHasNextPage,
-    limit
+    limit,
+    viewMode, setViewMode
 }) => {
     const [searchResults, setSearchResults] = useState([]);
     const [message, setMessage] = useState(null);
@@ -139,13 +141,39 @@ const Videos = ({
                     searchTerm={searchTerm}
                     setSearchTerm={setSearchTerm}
                 />
-                <VideoList
-                    searchResults={searchResults}
-                    handleDelete={handleDelete}
-                    limit={limit}
-                    handleNextPage={handleNextPage}
-                    hasNextPage={hasNextPage}
-                />
+                <div className='view-modes'>
+                    <button
+                        className={viewMode === 'grid' ? 'active' : ''}
+                        onClick={() => setViewMode('grid')}
+                    >
+                        Grid View
+                    </button>
+                    <button
+                        className={viewMode === 'list' ? 'active' : ''}
+                        onClick={() => setViewMode('list')}
+                    >
+                        List View
+                    </button>
+                </div>
+                {
+                    viewMode === 'grid' ?
+                        <VideoGrid
+                            searchResults={searchResults}
+                            handleDelete={handleDelete}
+                            limit={limit}
+                            handleNextPage={handleNextPage}
+                            hasNextPage={hasNextPage}
+                        /> : 
+                        <VideoList
+                            searchResults={searchResults}
+                            handleDelete={handleDelete}
+                            limit={limit}
+                            handleNextPage={handleNextPage}
+                            hasNextPage={hasNextPage}
+                        />
+                }
+                
+                
             </div>
         </div>
     )

@@ -15,6 +15,7 @@ function App() {
   const [page, setPage] = useState(1);
   const [limit, setLimit] = useState(2);
   const [hasNextPage, setHasNextPage] = useState(false);
+  const [viewMode, setViewMode] = useState('grid'); // 'grid' or 'list'
 
   return (
       <BrowserRouter>
@@ -35,6 +36,8 @@ function App() {
                   setLimit={setLimit}
                   hasNextPage={hasNextPage}
                   setHasNextPage={setHasNextPage}
+                  viewMode={viewMode}
+                  setViewMode={setViewMode}
                 />
               } 
           />
