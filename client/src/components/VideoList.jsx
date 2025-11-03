@@ -73,7 +73,7 @@ const VideoList = ({
                     className="next-button"
                     onClick={handleNextPage}
                 >
-                    Next {limit} Videos
+                    Load More
                 </button>
             </div>
         </div>
