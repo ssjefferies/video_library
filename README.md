@@ -214,6 +214,26 @@ curl -X POST http://localhost:3000/api/videos \
     "upload_date": "2024-01-01"
   }'
 ```
+### Screenshots
+
+#### Home Page - Grid View
+![Grid View](./screenshots/grid-view.png)
+
+#### Home Page - Grid View with Filters
+![Grid View with Filters](./screenshots/filters.png)
+
+#### Home Page - List View
+![List View](./screenshots/list-view.png)
+
+#### Edit Video
+![Edit Video](./screenshots/edit-video.png)
+
+#### New Video
+![New Video](./screenshots/new-video.png)
+
+#### New Video with Errors
+![New Video with Errors](./screenshots/new-video-errors.png)
+
 
 ## Project Structure
 
