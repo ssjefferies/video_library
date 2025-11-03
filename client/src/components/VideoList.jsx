@@ -1,4 +1,5 @@
 
+import { Link } from 'react-router-dom';
 import Table from '@mui/material/Table';
 import TableBody from '@mui/material/TableBody';
 import TableCell from '@mui/material/TableCell';
@@ -6,22 +7,25 @@ import TableContainer from '@mui/material/TableContainer';
 import TableHead from '@mui/material/TableHead';
 import TableRow from '@mui/material/TableRow';
 import Paper from '@mui/material/Paper';
+import EditOutlinedIcon from '@mui/icons-material/EditOutlined';
+import CloseOutlinedIcon from '@mui/icons-material/CloseOutlined';
 
 import './VideoList.css';
 
-const VideoList = ({ searchResults }) => {
+const VideoList = ({ searchResults, handleDelete }) => {
     return (
         <div id="video-list">
             <TableContainer component={Paper}>
-      <Table sx={{ minWidth: 650 }} aria-label="simple table">
+      <Table sx={{ tableLayout: 'fixed', width: '100%' }} aria-label="simple table">
         <TableHead>
           <TableRow>
-            <TableCell align="right">Title</TableCell>
-            <TableCell align="right">Url</TableCell>
-            <TableCell align="right">Thumbnail Url</TableCell>
-            <TableCell align="right">Duration</TableCell>
-            <TableCell align="right">Category</TableCell>
-            <TableCell align="right">Upload Date</TableCell>
+            <TableCell align="left" sx={{width: "50px", maxWidth: '50px'}}></TableCell>
+            <TableCell align="left" sx={{width: "200px", maxWidth: '250px'}}>Title</TableCell>
+            <TableCell align="left">Url</TableCell>
+            <TableCell align="left">Thumbnail Url</TableCell>
+            <TableCell align="left">Duration</TableCell>
+            <TableCell align="left">Category</TableCell>
+            <TableCell align="left">Upload Date</TableCell>
           </TableRow>
         </TableHead>
         <TableBody>
@@ -30,12 +34,26 @@ const VideoList = ({ searchResults }) => {
               key={row.id}
               sx={{ '&:last-child td, &:last-child th': { border: 0 } }}
             >
-              <TableCell align="right">{row.title}</TableCell>
-              <TableCell align="right">{row.url}</TableCell>
-              <TableCell align="right">{row.thumbnail_url}</TableCell>
-              <TableCell align="right">{row.duration}</TableCell>
-              <TableCell align="right">{row.category}</TableCell>
-              <TableCell align="right">{row.upload_date}</TableCell>
+                <TableCell align="left" style={{ display: 'flex' }}>
+                    <Link to={`/form/${row.id}`}
+                        aria-label="Edit Video"
+                        title="Edit Video"
+                    >
+                        <EditOutlinedIcon className='edit-icon'/>
+                    </Link>
+                    <CloseOutlinedIcon
+                        className='delete-icon'
+                        aria-label="Delete Video"
+                        title="Delete Video"
+                        onClick={() => handleDelete(row.id)}
+                    />
+                </TableCell>
+                <TableCell align="left">{row.title}</TableCell>
+                <TableCell align="left">{row.url}</TableCell>
+                <TableCell align="left">{row.thumbnail_url}</TableCell>
+                <TableCell align="left">{row.duration}</TableCell>
+                <TableCell align="left">{row.category}</TableCell>
+                <TableCell align="left">{row.upload_date}</TableCell>
             </TableRow>
           ))}
         </TableBody>

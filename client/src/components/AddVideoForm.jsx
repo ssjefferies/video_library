@@ -1,8 +1,10 @@
 import React, { useEffect, useState} from 'react';
+import { useParams } from 'react-router-dom';
 import './AddVideoForm.scss';
 
 // make the submit button right-aligned and styled nicely
-const AddVideoForm = ({ videoId }) => {
+const AddVideoForm = () => {
+    const { id: videoId } = useParams();
     const title = videoId ? 'Edit Video' : 'New Video';
 
     const [titleInput, setTitleInput] = useState('');
@@ -20,6 +22,36 @@ const AddVideoForm = ({ videoId }) => {
     const [errorMessage, setErrorMessage] = useState(null);
     // error state to contain a message for each field that has an error
     const [fieldErrors, setFieldErrors] = useState({});
+
+    useEffect(() => {
+        // if editing an existing video, fetch its data
+        if (videoId) {
+            fetch(`${import.meta.env.VITE_VIDEO_LIBRARY_API_URL}/api/videos/${videoId}`)
+            .then((response) => {
+                if (!response.ok) {
+                    throw new Error('Network response was not ok');
+                }
+                return response.json();
+            })
+            .then((data) => {
+                const video = data.data;
+                setTitleInput(video.title || '');
+                setDescriptionInput(video.description || '');
+                setUrlInput(video.url || '');
+                setThumbnailUrlInput(video.thumbnail_url || '');
+                setDurationInput(video.duration || '');
+                setCategoryInput(video.category || '');
+                setTagsInput((video.tags || []).join(', '));
+                setUploaderNameInput(video.uploader_name || '');
+                setFileSizeInput(video.file_size || '');
+                setResolutionInput(video.resolution || '');
+            })
+            .catch((error) => {
+                console.error('Error fetching video data:', error);
+                setErrorMessage('Error fetching video data. Please try again.');
+            });
+        }
+    }, [videoId]);
 
 
     const handleSubmit = (e) => {
@@ -46,9 +78,15 @@ const AddVideoForm = ({ videoId }) => {
             resolution: resolutionInput,
         };
         console.log('Submitting video data:', videoData);
+
         // post to api/videos
-        fetch(`${import.meta.env.VITE_VIDEO_LIBRARY_API_URL}/api/videos`, {
-            method: 'POST',
+        const method = videoId ? 'PUT' : 'POST';
+        const url = videoId ?
+            `${import.meta.env.VITE_VIDEO_LIBRARY_API_URL}/api/videos/${videoId}` :
+            `${import.meta.env.VITE_VIDEO_LIBRARY_API_URL}/api/videos`;
+
+        fetch(url, {
+            method,
             headers: {
                 'Content-Type': 'application/json',
             },
@@ -106,13 +144,13 @@ const AddVideoForm = ({ videoId }) => {
             </header>
 
             {errorMessage && (
-                <div class='error-message form-error'>
+                <div className='error-message form-error'>
                     {errorMessage}
                 </div>
             )}
 
             <form>
-                <div class='input-group'>
+                <div className='input-group'>
                     <label for='title'>Title</label>
                     <input
                         value={titleInput}
@@ -120,11 +158,11 @@ const AddVideoForm = ({ videoId }) => {
                         className={fieldErrors.title ? 'input-error' : ''}
                         type='text' id='title' name='title' placeholder='Title...' />
                     {fieldErrors.title && (
-                        <span class='error-message'>{fieldErrors.title}</span>
+                        <span className='error-message'>{fieldErrors.title}</span>
                     )}
                 </div>
 
-                <div class='input-group'>
+                <div className='input-group'>
                     <label for='description'>Description</label>
                     <textarea
                         value={descriptionInput}
@@ -132,7 +170,7 @@ const AddVideoForm = ({ videoId }) => {
                         id='description' name='description' placeholder='Description...'></textarea>
                 </div>
 
-                <div class='input-group'>
+                <div className='input-group'>
                     <label for='url'>URL</label>
                     <input
                         value={urlInput}
@@ -140,7 +178,7 @@ const AddVideoForm = ({ videoId }) => {
                         type='url' id='url' name='url' placeholder='URL...' />
                 </div>
 
-                <div class='input-group'>
+                <div className='input-group'>
                     <label for='thumbnail-url'>URL</label>
                     <input
                         value={thumbnailUrlInput}
@@ -148,7 +186,7 @@ const AddVideoForm = ({ videoId }) => {
                         type='url' id='thumbnail-url' name='thumbnail-url' placeholder='Thumbnail URL...' />
                 </div>
 
-                <div class='input-group'>
+                <div className='input-group'>
                     <label for="duration">Duration (in seconds)</label>
                     <input
                         value={durationInput}
@@ -156,7 +194,7 @@ const AddVideoForm = ({ videoId }) => {
                         type='number' id='duration' name='duration' placeholder='Duration...' />
                 </div>
 
-                <div class='input-group'>
+                <div className='input-group'>
                     <label for='category'>Category</label>
                     <input
                         value={categoryInput}
@@ -164,7 +202,7 @@ const AddVideoForm = ({ videoId }) => {
                         type='text' id='category' name='category' placeholder='Category...' />
                 </div>
 
-                <div class='input-group'>
+                <div className='input-group'>
                     <label for='tags'>Tags (comma separated)</label>
                     <input
                         value={tagsInput}
@@ -172,7 +210,7 @@ const AddVideoForm = ({ videoId }) => {
                         type='text' id='tags' name='tags' placeholder='Tags...' />
                 </div>
 
-                <div class='input-group'>
+                <div className='input-group'>
                     <label for='uploader-name'>Uploader Name</label>
                     <input
                         value={uploaderNameInput}
@@ -180,7 +218,7 @@ const AddVideoForm = ({ videoId }) => {
                         type='text' id='uploader-name' name='uploader-name' placeholder='Uploader Name...' />
                 </div>
 
-                <div class='input-group'>
+                <div className='input-group'>
                     <label for='file-size'>File Size (in bytes)</label>
                     <input
                         value={fileSizeInput}
@@ -188,7 +226,7 @@ const AddVideoForm = ({ videoId }) => {
                         type='number' id='file-size' name='file-size' placeholder='File Size...' />
                 </div>
 
-                <div class='input-group'>
+                <div className='input-group'>
                     <label for='resolution'>Resolution (e.g., 1920x1080)</label>
                     <input
                         value={resolutionInput}
@@ -196,10 +234,10 @@ const AddVideoForm = ({ videoId }) => {
                         type='text' id='resolution' name='resolution' placeholder='Resolution...' />
                 </div>
 
-                <section class='form-footer'>
+                <section className='form-footer'>
                     <button
                         onClick={handleSubmit}
-                        type='submit' class='submit-button'>{videoId ? 'Update Video' : 'Add Video'}</button>
+                        type='submit' className='submit-button'>{videoId ? 'Update Video' : 'Add Video'}</button>
                 </section>
             </form>
         </div>

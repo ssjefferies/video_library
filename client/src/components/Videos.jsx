@@ -24,7 +24,19 @@ const Videos = () => {
         }, 500)
 
         return () => clearTimeout(delaySearch);
-    }, [searchTerm])
+    }, [searchTerm]);
+
+    const handleDelete = async (id) => {
+        try {
+            await fetch(`${VIDEO_LIBRARY_API_URL}/api/videos/${id}`, {
+                method: 'DELETE',
+            });
+            // Refresh results after deletion
+            fetchResults();
+        } catch (error) {
+            setErroMessage(error.message);
+        }
+    }
 
     const fetchResults = async () => {
         try {
@@ -43,8 +55,14 @@ const Videos = () => {
         <div id="video-main">
             <VideoFilters />
             <div id="search-body">
-                <VideoSearch searchTerm={searchTerm} setSearchTerm={setSearchTerm} />
-                <VideoList searchResults={searchResults}/>
+                <VideoSearch
+                    searchTerm={searchTerm}
+                    setSearchTerm={setSearchTerm}
+                />
+                <VideoList
+                    searchResults={searchResults}
+                    handleDelete={handleDelete}
+                />
             </div>
         </div>
     )

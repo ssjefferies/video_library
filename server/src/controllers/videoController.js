@@ -19,13 +19,43 @@ exports.getVideos = async(req, res) => {
         })
     } catch (error) {
         logger.error('Error fetching videos:', error);
-        res.status(500).json({ error: 'Failed to Fetch videos' });
+        res.status(500).json({ error: 'Unable to Fetch videos' });
     }
-}
+};
+
+/**
+ * 
+ * @param {*} req 
+ * @param {*} res 
+ * @returns 
+ */
+exports.getVideoById = async(req, res) => {
+    const { id } = req.params;
+    
+    try {
+        const [rows] = await pool.execute('SELECT * FROM videos WHERE id = ?', [id]);
+        if (rows.length === 0) {
+            return res.status(404).json({ error: 'Video not found' });
+        }
+        res.status(200).json({
+            succes: true,
+            data: rows[0]
+        });
+    }
+    catch (error) {
+        logger.error('Error fetching video by ID:', error);
+        res.status(500).json({ error: 'Unable to fetch video' });
+    }
+};
 
 const SEARCH_QUERY_BASE = 'SELECT * FROM videos';
 const SEARCH_QUERY_ORDER = ' ORDER BY upload_date DESC';
 
+/**
+ * 
+ * @param {*} req 
+ * @param {*} res 
+ */
 exports.searchVideos = async (req, res) => {
     const {term, category} = req.query;
 
@@ -124,6 +154,49 @@ exports.createVideo = async(req, res) => {
         })
     } catch (error) {
         logger.error('Error creating video: ', error);
-        res.status(500).json({ error: 'Failed to create video '});
+        res.status(500).json({ error: 'Unable to create video '});
     }
 }
+
+/**
+ * 
+ * @param {*} id 
+ * @param {*} fields 
+ * @returns 
+ */
+exports.updateVideo = async(req, res) => {
+    const { id } = req.params;
+    const fields = req.body;
+    
+    try {
+        const setClause = Object.keys(fields)
+            .map(key => `${key} = ?`)
+            .join(', ');
+        const params = [...Object.values(fields), id];
+
+        const query = `UPDATE videos SET ${setClause} WHERE id = ?`;
+
+        const [result] = await pool.execute(query, params);
+        res.status(201).json({
+            id: result.insertId,
+            message: 'Video updated successfully'
+        })
+    } catch (error) {
+        logger.error('Error updating video: ', error);
+        res.status(500).json({ error: 'Unable to update video '});
+    }
+};
+
+exports.deleteVideo = async(req, res) => {
+    const { id } = req.params;
+
+    try {
+        const [result] = await pool.execute('DELETE FROM videos WHERE id = ?', [id]);
+        res.status(200).json({
+            message: 'Video deleted successfully'
+        });
+    } catch (error) {
+        logger.error('Error deleting video: ', error);
+        res.status(500).json({ error: 'Unable to delete video' });
+    }
+};
